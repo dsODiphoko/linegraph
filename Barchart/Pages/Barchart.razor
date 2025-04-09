@@ -1,0 +1,36 @@
+@page "/barchart"
+@using Barchart.Data
+@inject WeatherForecastService ForecastService
+
+<h3>Weather Temperature Barchart</h3>
+
+<div class="barchart-container">
+    @if (forecasts == null)
+    {
+        <p>Loading...</p>
+    }
+    else
+    {
+        <div class="barchart">
+            @foreach (var forecast in forecasts)
+            {
+                var height = ((forecast.TemperatureC + 20) * 100) / 75; // Normalize to percentage (range -20 to 55)
+                <div class="bar-wrapper">
+                    <div class="bar" style="height: @height%">
+                        <span class="tooltip">@forecast.TemperatureC°C</span>
+                    </div>
+                    <div class="label">@forecast.Date.ToString("MM/dd")</div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await ForecastService.GetForecastAsync(DateOnly.FromDateTime(DateTime.Now));
+    }
+}
